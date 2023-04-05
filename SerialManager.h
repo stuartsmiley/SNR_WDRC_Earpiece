@@ -12,6 +12,8 @@ extern void setInputSource(int);
 extern void setInputMixer(int, float);
 extern void incrementInputGain(float);
 extern void incrementKnobGain(float);
+extern void startLogging();
+extern void stopLogging();
 
 
 //now, define the Serial Manager class
@@ -94,10 +96,12 @@ void SerialManager::respondToByte(char c) {
     case 'r':
       Serial.println("Received: begin SD recording");
       audioSDWriter.startRecording();
+      startLogging();
       break;
     case 's':
       Serial.println("Received: stop SD recording");
       audioSDWriter.stopRecording();
+      stopLogging();
       break;
     case '|':
       Serial.println("Recieved: delete all SD recordings.");

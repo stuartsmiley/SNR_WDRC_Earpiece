@@ -9,6 +9,7 @@
 // 2. Log compPerBand[Ichan].getCurrentGain_dB() at the sample frequency. (TODO)
 // 3. Use the typmpan ear pieces.
 // 4. Use a common hearing aid algorithm for compression (see WDRC_FIR_8Band expample, but think stereo).
+// 5. Potentiometer is out of picture. Volume level controlled programatically.
 //
 // You control this sketch through the USB Serial via the Arduino IDE's Serial Monitor.  You can always type an
 // "h" (without quotes) to get the help menu.
@@ -21,7 +22,7 @@
 //    connected through the earpiece audio ports (which uses the USB-B Mini connector).
 //
 // Mixing:
-//    TODO: what should the mix be?
+//    TODO: is this mix OK?
 //    The front and back mic for each earpiece will be mixed into a single channel.
 //    The output will be routed to both the Tympan AIC (i2s_out[0,1]) and the 
 //    Shield AIC (i2s_out[2,3]), which can be heard using the earpiece receivers 
@@ -38,7 +39,7 @@
 // MIT License.  Use at your own risk.  Have fun!
 //
 
-//here are the libraries that we need
+// here are the libraries that we need
 #include <Tympan_Library.h>  //include the Tympan Library
 #include <SD.h>
 
@@ -54,8 +55,9 @@ const int N_CHAN = 8;
 Tympan           myTympan(TympanRev::E, audio_settings);         //choose TympanRev::D or TympanRev::E
 EarpieceShield   earpieceShield(TympanRev::E, AICShieldRev::A);  //Note that EarpieceShield is defined in the Tympan_Libarary in AICShield.h 
 SDClass sdx;
-String log_filename;
-
+// String log_filename;
+FsFile logFile;
+boolean logFileOpen = false;
 // Instantiate the audio classes
 AudioInputI2SQuad_F32   i2s_in(audio_settings);         //Bring audio in
 AudioMixer4_F32         inputMixerL(audio_settings);    //For mixing (or not) the two mics in the left earpiece
@@ -64,11 +66,11 @@ AudioMixer4_F32         inputMixerR(audio_settings);    //For mixing (or not) th
 AudioOutputI2SQuad_F32  i2s_out(audio_settings);        //Send audio out
 AudioSDWriter_F32       audioSDWriter(&(sdx.sdfs), audio_settings);  //Write audio to the SD card (if activated)
 
-// TODO a non-ui version of   stereoContainerWDRC.addPairMultiBandWDRC(&(multiBandWDRC[LEFT]),&(multiBandWDRC[RIGHT])); 
+// TODO a non-ui version of   stereoContainerWDRC.addPairMultiBandWDRC(&(multiBandWDRC[LEFT]),&(multiBandWDRC[RIGHT]));
 // pretty sure that is covered by compPerBandL and compPerBandR
 AudioEffectGain_F32      preGain;
 AudioFilterFIR_F32       firFiltL[N_CHAN];  //here are the filters to break up the audio into multiple bands
-AudioFilterFIR_F32       firFiltR[N_CHAN]; 
+AudioFilterFIR_F32       firFiltR[N_CHAN];
 AudioEffectCompWDRC_F32  compPerBandL[N_CHAN]; //here are the per-band compressors
 AudioEffectCompWDRC_F32  compPerBandR[N_CHAN];
 AudioEffectCompWDRC_F32  compBroadband[2]; //here is the broad band compressors
@@ -95,7 +97,7 @@ AudioConnection_F32     patchCord34(inputMixerL, 0, firFiltL[3], 0);
 AudioConnection_F32     patchCord35(inputMixerL, 0, firFiltL[4], 0);
 AudioConnection_F32     patchCord36(inputMixerL, 0, firFiltL[5], 0);
 AudioConnection_F32     patchCord37(inputMixerL, 0, firFiltL[6], 0);
-AudioConnection_F32     patchCord38(inputMixerL, 0, firFiltL[7], 0); 
+AudioConnection_F32     patchCord38(inputMixerL, 0, firFiltL[7], 0);
 
 AudioConnection_F32     patchCord41(inputMixerR, 0, firFiltR[0], 0);
 AudioConnection_F32     patchCord42(inputMixerR, 0, firFiltR[1], 0);
@@ -185,7 +187,7 @@ void setup() {
   if (!sdx.sdfs.begin(SdioConfig(FIFO_SDIO))) {
     sdx.sdfs.errorHalt(&Serial, "setup: SD begin failed!");
   }
-  log_filename = "stu1.txt";
+  // log_filename = "stu1.txt";
   myTympan.beginBothSerial(); delay(1500);
   Serial.println("EarpieceManualMixing_wSD: setup():...");
   Serial.print("Sample Rate (Hz): "); Serial.println(audio_settings.sample_rate_Hz);
@@ -222,7 +224,7 @@ void setup() {
   float default_mic_input_gain_dB = 15.0f; //gain on the microphone
   setInputGain_dB(default_mic_input_gain_dB); // set MICPGA volume, 0-47.5dB in 0.5dB setps
 
-  
+ 
   //End of setup
   Serial.println("Setup: complete."); 
   serialManager.printHelp();
@@ -268,7 +270,7 @@ static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *d
     float fs = (float) fs_Hz; // WEA override
     float maxdB = (float) dsl->maxdB;
     float exp_cr = (float) dsl->exp_cr[i];
-    float exp_end_knee = (float) dsl->exp_end_knee[i];    
+    float exp_end_knee = (float) dsl->exp_end_knee[i];
     float tk = (float) dsl->tk[i];
     float comp_ratio = (float) dsl->cr[i];
     float tkgain = (float) dsl->tkgain[i];
@@ -282,7 +284,6 @@ static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *d
     //set the compressor's parameters
     WDRCs[i].setSampleRate_Hz(fs);
     WDRCs[i].setParams(atk,rel,maxdB,exp_cr,exp_end_knee,tkgain,comp_ratio,tk,bolt);
-    
   }
 }
 
@@ -309,9 +310,34 @@ void setupAudioProcessing(void) {
   configurePerBandWDRCs(N_CHAN, audio_settings.sample_rate_Hz, &dsl, &gha, compPerBandR);
 }
 
-
+void printCompressorState(unsigned long curTime_micros, unsigned long updatePeriod_micros) {
+  static unsigned long lastUpdate_micros = 0;
+  if (curTime_micros < lastUpdate_micros) {
+    lastUpdate_micros = 0;
+  }
+  if ((curTime_micros - lastUpdate_micros) > updatePeriod_micros) {
+    logFile.print(curTime_micros);
+    logFile.print(' ');
+    for (int i = 0; i < N_CHAN;  i++) {
+      logFile.print(compPerBandL[i].getCurrentLevel_dB());
+      logFile.print(" ");
+    }
+    for (int i = 0; i < N_CHAN;  i++) {
+      logFile.print(compPerBandR[i].getCurrentLevel_dB());
+      if (i < (N_CHAN - 1)) {
+          logFile.print(" ");
+      }
+    }
+    logFile.println();
+  }
+}
 
 void loop() {
+
+  if (logFileOpen) {
+    printCompressorState(micros(), 22);
+    
+  }
   //respond to Serial commands
   while (Serial.available()) serialManager.respondToByte((char)Serial.read());   //USB Serial
   //while (Serial1.available()) serialManager.respondToByte((char)Serial1.read()); //BT Serial
@@ -325,9 +351,9 @@ void loop() {
   //periodicallly check the potentiometer
   servicePotentiometer(millis(),100); //service the potentiometer every 100 msec
 
-  static int prev_SD_state = (int)audioSDWriter.getState(); //this is executed the first time through this function and then it persists
-  if ((int)audioSDWriter.getState() != prev_SD_state) writeTextToSD(String(millis()) + String(", audioSDWriter_State = ") + String((int)audioSDWriter.getState()));
-  prev_SD_state = (int)audioSDWriter.getState();  //prepare for the next time through this function
+//  static int prev_SD_state = (int)audioSDWriter.getState(); //this is executed the first time through this function and then it persists
+//  if ((int)audioSDWriter.getState() != prev_SD_state) writeTextToSD(String(millis()) + String(", audioSDWriter_State = ") + String((int)audioSDWriter.getState()));
+//  prev_SD_state = (int)audioSDWriter.getState();  //prepare for the next time through this function
   
 }
 
@@ -388,11 +414,11 @@ void setInputGain_dB(float newGain_dB) {
   Serial.print("Input Gain: "); Serial.print(inputGain_dB); Serial.println("dB");
 }
 float setDigitalGain_dB(float gain_dB) { return setDigitalGain_dB(gain_dB, true); }
-float setDigitalGain_dB(float gain_dB, bool printToUSBSerial) {  
+float setDigitalGain_dB(float gain_dB, bool printToUSBSerial) {
   // or should this be compBroadband[0] and compBroadband[1]
   float digital_gain = compBroadband[0].setGain_dB(gain_dB); //this actually sets the gain
   compBroadband[1].setGain_dB(gain_dB); //this actually sets the gain
-  
+
   return digital_gain;
 }
 //Increment Headphone Output Volume
@@ -407,13 +433,27 @@ void setOutputVolume_dB(float newVol_dB) {
   Serial.print("Output Volume: "); Serial.print(outputVolume_dB); Serial.println("dB");
 }
 
-void writeTextToSD(String myString) {
-
-  //adapted from Teensy SD example: SdFat_Usage.ino
-  Serial.println("writeTextToSD: opening " + String(log_filename));
-  FsFile myfile = sdx.sdfs.open(log_filename, O_WRITE | O_CREAT | O_APPEND);  //will append to the end of the file
-  Serial.println("writeTextToSD: writing: " + myString);
-  myfile.println(myString); //write the text myfile.close();
-  Serial.println("writeTextToSD: closing file.");
-  myfile.close(); 
+void startLogging() {
+  myTympan.println("START LOGGING NOW");
+  //logFile = sdx.sdfs.open("experiment7.txt", O_WRITE | O_CREAT);
+  logFile = sdx.sdfs.open("experiment9.txt", O_WRITE | O_CREAT);
+  logFileOpen = true;
+  logFile.println("V0.1");
 }
+
+void stopLogging() {
+  logFileOpen = false;
+  logFile.close();
+  myTympan.println("END LOGGING");
+}
+
+//void writeTextToSD(String myString) {
+//
+//  //adapted from Teensy SD example: SdFat_Usage.ino
+//  Serial.println("writeTextToSD: opening " + String(log_filename));
+//  FsFile myfile = sdx.sdfs.open(log_filename, O_WRITE | O_CREAT | O_APPEND);  //will append to the end of the file
+//  Serial.println("writeTextToSD: writing: " + myString);
+//  myfile.println(myString); //write the text myfile.close();
+//  Serial.println("writeTextToSD: closing file.");
+//  myfile.close(); 
+//}
