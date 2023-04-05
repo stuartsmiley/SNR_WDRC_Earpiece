@@ -8,7 +8,7 @@ Follow the instructions at https://github.com/Tympan/Docs/wiki/Getting-Started-w
 ## Connecting via matlab
 look up com port on computer.
 ```
-i>s8 = serialport("com8", 9600)
+>s8 = serialport("com8", 9600)
 > writeline(s8, "r") // start recording
 .... play sounds
 > writeline(s8, "s") // stop recording
