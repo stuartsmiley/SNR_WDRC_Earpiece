@@ -6,15 +6,14 @@
 //
 // Purpose: Combine features from various examples to: 
 // 1. Writing both audio and log at the same time.
-// 2. Log compPerBand[Ichan].getCurrentGain_dB() at the sample frequency. (TODO)
+// 2. Log compPerBand[Ichan].getCurrentGain_dB() at the sample frequency.
 // 3. Use the typmpan ear pieces.
 // 4. Use a common hearing aid algorithm for compression (see WDRC_FIR_8Band expample, but think stereo).
-// 5. Potentiometer is out of picture. Volume level controlled programatically.
+// 5. Potentiometer is out of picture. Volume level controlled programatically. TODO
 //
 // You control this sketch through the USB Serial via the Arduino IDE's Serial Monitor.  You can always type an
 // "h" (without quotes) to get the help menu.
 //
-// The volume pot on the side of the Tympan also controls the overall output volume.
 //
 // Hardware: 
 //    Assumes that you're using a Tympan RevE with an Earpiece Shield
@@ -55,27 +54,34 @@ const int N_CHAN = 8;
 Tympan           myTympan(TympanRev::E, audio_settings);         //choose TympanRev::D or TympanRev::E
 EarpieceShield   earpieceShield(TympanRev::E, AICShieldRev::A);  //Note that EarpieceShield is defined in the Tympan_Libarary in AICShield.h 
 SDClass sdx;
-// String log_filename;
+
 FsFile logFile;
 boolean logFileOpen = false;
+int experimentCount = 0;
 // Instantiate the audio classes
 AudioInputI2SQuad_F32   i2s_in(audio_settings);         //Bring audio in
 AudioMixer4_F32         inputMixerL(audio_settings);    //For mixing (or not) the two mics in the left earpiece
 AudioMixer4_F32         inputMixerR(audio_settings);    //For mixing (or not) the two mics in the right earpiece
-// TODO need two AudioEffectMultiBandWDRC_F32?? here
+
 AudioOutputI2SQuad_F32  i2s_out(audio_settings);        //Send audio out
 AudioSDWriter_F32       audioSDWriter(&(sdx.sdfs), audio_settings);  //Write audio to the SD card (if activated)
 
-// TODO a non-ui version of   stereoContainerWDRC.addPairMultiBandWDRC(&(multiBandWDRC[LEFT]),&(multiBandWDRC[RIGHT]));
-// pretty sure that is covered by compPerBandL and compPerBandR
 AudioEffectGain_F32      preGain;
-AudioFilterFIR_F32       firFiltL[N_CHAN];  //here are the filters to break up the audio into multiple bands
+//here are the filters to break up the audio into multiple bands
+AudioFilterFIR_F32       firFiltL[N_CHAN];
 AudioFilterFIR_F32       firFiltR[N_CHAN];
-AudioEffectCompWDRC_F32  compPerBandL[N_CHAN]; //here are the per-band compressors
+
+//here are the per-band compressors
+AudioEffectCompWDRC_F32  compPerBandL[N_CHAN];
 AudioEffectCompWDRC_F32  compPerBandR[N_CHAN];
-AudioEffectCompWDRC_F32  compBroadband[2]; //here is the broad band compressors
-AudioMixer8_F32          mixerL; //mixer to reconstruct the broadband audio  left
-AudioMixer8_F32          mixerR; //mixer to reconstruct the broadband audio  right
+
+//here are the broad band compressors
+AudioEffectCompWDRC_F32  compBroadband[2];
+
+//mixer to reconstruct the broadband audio  left
+AudioMixer8_F32          mixerL;
+//mixer to reconstruct the broadband audio  right
+AudioMixer8_F32          mixerR;
 
 //Connect the front and rear mics (from each earpiece) to input mixer for the left ear
 AudioConnection_F32     patchcord1(i2s_in, EarpieceShield::PDM_LEFT_FRONT,  inputMixerL, 0);    //Left-Front Mic
@@ -187,7 +193,7 @@ void setup() {
   if (!sdx.sdfs.begin(SdioConfig(FIFO_SDIO))) {
     sdx.sdfs.errorHalt(&Serial, "setup: SD begin failed!");
   }
-  // log_filename = "stu1.txt";
+ 
   myTympan.beginBothSerial(); delay(1500);
   Serial.println("EarpieceManualMixing_wSD: setup():...");
   Serial.print("Sample Rate (Hz): "); Serial.println(audio_settings.sample_rate_Hz);
@@ -316,6 +322,7 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
     lastUpdate_micros = 0;
   }
   if ((curTime_micros - lastUpdate_micros) > updatePeriod_micros) {
+    // TODO: would it be better to concat all output to a string and do a single logfile.println() ?
     logFile.print(curTime_micros);
     logFile.print(' ');
     for (int i = 0; i < N_CHAN;  i++) {
@@ -348,13 +355,8 @@ void loop() {
   //service the LEDs...blink slow normally, blink fast if recording
   myTympan.serviceLEDs(millis(),audioSDWriter.getState() == AudioSDWriter::STATE::RECORDING); 
 
-  //periodicallly check the potentiometer
+  // periodicallly check the potentiometer
   servicePotentiometer(millis(),100); //service the potentiometer every 100 msec
-
-//  static int prev_SD_state = (int)audioSDWriter.getState(); //this is executed the first time through this function and then it persists
-//  if ((int)audioSDWriter.getState() != prev_SD_state) writeTextToSD(String(millis()) + String(", audioSDWriter_State = ") + String((int)audioSDWriter.getState()));
-//  prev_SD_state = (int)audioSDWriter.getState();  //prepare for the next time through this function
-  
 }
 
 
@@ -433,10 +435,9 @@ void setOutputVolume_dB(float newVol_dB) {
   Serial.print("Output Volume: "); Serial.print(outputVolume_dB); Serial.println("dB");
 }
 
-void startLogging() {
-  myTympan.println("START LOGGING NOW");
-  //logFile = sdx.sdfs.open("experiment7.txt", O_WRITE | O_CREAT);
-  logFile = sdx.sdfs.open("experiment9.txt", O_WRITE | O_CREAT);
+void startLogging(char *fname) {
+  //myTympan.println("START LOGGING NOW");
+  logFile = sdx.sdfs.open(fname, O_WRITE | O_CREAT);
   logFileOpen = true;
   logFile.println("V0.1");
 }
@@ -444,7 +445,7 @@ void startLogging() {
 void stopLogging() {
   logFileOpen = false;
   logFile.close();
-  myTympan.println("END LOGGING");
+  //myTympan.println("END LOGGING");
 }
 
 //void writeTextToSD(String myString) {
@@ -457,3 +458,20 @@ void stopLogging() {
 //  Serial.println("writeTextToSD: closing file.");
 //  myfile.close(); 
 //}
+
+void startExperiment() {
+  experimentCount++;
+  char fname[] = "AUDIOxxx.WAV";
+  char exp_fname[] = "EXPxxx.txt";
+  int hundreds = experimentCount / 100;
+  fname[5] = hundreds + '0';  //stupid way to convert the number to a character
+  exp_fname[3] = hundreds + '0';
+  int tens = (experimentCount - (hundreds*100)) / 10;  //truncates
+  fname[6] = tens + '0';  //stupid way to convert the number to a character
+  exp_fname[4] = tens + '0'; 
+  int ones = experimentCount - (tens * 10) - (hundreds*100);
+  fname[7] = ones + '0';  //stupid way to convert the number to a character
+  exp_fname[5] = ones + '0';
+  audioSDWriter.startRecording(fname);
+  startLogging(exp_fname); 
+}
