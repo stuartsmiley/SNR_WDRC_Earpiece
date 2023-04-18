@@ -12,8 +12,9 @@ extern void setInputSource(int);
 extern void setInputMixer(int, float);
 extern void incrementInputGain(float);
 extern void incrementKnobGain(float);
-extern void startLogging();
+extern void startExperiment();
 extern void stopLogging();
+extern void startExperiment();
 
 
 //now, define the Serial Manager class
@@ -32,23 +33,23 @@ void SerialManager::printHelp(void) {
   Serial.println();
   Serial.println("SerialManager Help: Available Commands:");
   Serial.println("  h  : Print this help");
-  Serial.println("  d  : Inputs: Use PDM Mics from Tympan Earpieces as input");
-  Serial.println("  w  : Inputs: Use PCB Mics");
-  Serial.println("  W  : Inputs: Use Mic on Mic Jack");
-  Serial.println("  e  : Inputs: Use LineIn on Mic Jack");
+//  Serial.println("  d  : Inputs: Use PDM Mics from Tympan Earpieces as input");
+//  Serial.println("  w  : Inputs: Use PCB Mics");
+//  Serial.println("  W  : Inputs: Use Mic on Mic Jack");
+//  Serial.println("  e  : Inputs: Use LineIn on Mic Jack");
   Serial.println("  i/I: Gain: Increase/Decrease Input by " + String(INCREMENT_INPUTGAIN_DB) + " dB");
   Serial.println("  k/K: Gain: Increase/Decrease Headphone Volume by " + String(INCREMENT_HEADPHONE_GAIN_DB) + " dB");
   Serial.println("  r,s,|: SD: begin/stop/deleteAll recording");
   Serial.println();
-  Serial.println("  1  : Mixer: Switch to Left-Front Earpiece Mic (L)");
-  Serial.println("  2  : Mixer: Switch to Left-Rear Earpiece Mic (L)");
-  Serial.println("  3  : Mixer: Switch to Right-Front Earpiece Mic (R)");
-  Serial.println("  4  : Mixer: Switch to Right-Rear Earpiece Mic (R)");
-  Serial.println("  5  : Mixer: Switch to Both Front Mics (L,R)");
-  Serial.println("  6  : Mixer: Switch to Both Rear Mics (L,R)");
-  Serial.println("  7  : Mixer: Switch to Tympan AIC only (L,R)");
-  Serial.println("  8  : Mixer: Switch to Earpiece Shield AIC only (L,R)");
-  Serial.println("  9  : Mixer: Switch to Mixing Front+Rear Mics (L,R)");
+//  Serial.println("  1  : Mixer: Switch to Left-Front Earpiece Mic (L)");
+//  Serial.println("  2  : Mixer: Switch to Left-Rear Earpiece Mic (L)");
+//  Serial.println("  3  : Mixer: Switch to Right-Front Earpiece Mic (R)");
+//  Serial.println("  4  : Mixer: Switch to Right-Rear Earpiece Mic (R)");
+//  Serial.println("  5  : Mixer: Switch to Both Front Mics (L,R)");
+//  Serial.println("  6  : Mixer: Switch to Both Rear Mics (L,R)");
+//  Serial.println("  7  : Mixer: Switch to Tympan AIC only (L,R)");
+//  Serial.println("  8  : Mixer: Switch to Earpiece Shield AIC only (L,R)");
+//  Serial.println("  9  : Mixer: Switch to Mixing Front+Rear Mics (L,R)");
   Serial.println();
 }
 
@@ -95,8 +96,9 @@ void SerialManager::respondToByte(char c) {
       break;
     case 'r':
       Serial.println("Received: begin SD recording");
-      audioSDWriter.startRecording();
-      startLogging();
+      startExperiment();
+      //audioSDWriter.startRecording();
+      //startLogging();
       break;
     case 's':
       Serial.println("Received: stop SD recording");
