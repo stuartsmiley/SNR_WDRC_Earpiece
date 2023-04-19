@@ -1,7 +1,7 @@
 //
 // Based on work created by Eric Yuan and Chip Audette.
 // 
-// UP NEXT in the process of adding a prescription for WDRC_8BandFir_Stereo_wApp (line 246 float setOutputGain_dB(float gain_dB) {  return myState.output_gain_dB = myTympan.volume_dB(gain_dB); }
+// NEXT - 2 channel recording instead of 4?
 //
 //
 // Purpose: Combine features from various examples to: 
@@ -9,7 +9,7 @@
 // 2. Log compPerBand[Ichan].getCurrentGain_dB() at the sample frequency.
 // 3. Use the typmpan ear pieces.
 // 4. Use a common hearing aid algorithm for compression (see WDRC_FIR_8Band expample, but think stereo).
-// 5. Potentiometer is out of picture. Volume level controlled programatically. TODO
+// 5. Potentiometer is out of picture. Volume level controlled programatically.
 //
 // You control this sketch through the USB Serial via the Arduino IDE's Serial Monitor.  You can always type an
 // "h" (without quotes) to get the help menu.
@@ -216,8 +216,8 @@ void setup() {
   Serial.print("SD configured for "); Serial.print(audioSDWriter.getNumWriteChannels()); Serial.println(" channels.");
   setupAudioProcessing();
 
-  //set headphone volume (will be overwritten by the volume pot)
-  setOutputVolume_dB(10.0); //dB, -63.6 to +24 dB in 0.5dB steps.
+  //set headphone volume (Potentiometer disabled. -5.0 is a comfortable level for normal hearing)
+  setOutputVolume_dB(-5.0); //dB, -63.6 to +24 dB in 0.5dB steps.
 
   //Choose the input source
   setInputSource(INPUT_PDMMICS); //choose PDM Mics, which are the mics in the Tympan Earpieces
@@ -356,7 +356,7 @@ void loop() {
   myTympan.serviceLEDs(millis(),audioSDWriter.getState() == AudioSDWriter::STATE::RECORDING); 
 
   // periodicallly check the potentiometer
-  servicePotentiometer(millis(),100); //service the potentiometer every 100 msec
+  //servicePotentiometer(millis(),100); //service the potentiometer every 100 msec
 }
 
 
