@@ -3,7 +3,6 @@
 
 //from GHA_Demo.c
 // DSL prescription - (first subject, left ear) from LD_RX.mat
-// THIS IS NOW CONFIGURED FOR FLAT_M_FAST
 static BTNRH_WDRC::CHA_DSL dsl = {5,  //attack (ms)
   300,  //release (ms)
   115, //dB SPL for input signal at 0 dBFS.  Needs to be tailored to mic, spkrs, and mic gain.
@@ -19,8 +18,8 @@ static BTNRH_WDRC::CHA_DSL dsl = {5,  //attack (ms)
 };
 
 //from GHA_Demo.c  from "amplify()"   Used for broad-band limiter
-BTNRH_WDRC::CHA_WDRC gha = {6.f, // attack time (ms)
-  72.f,    // release time (ms)
+BTNRH_WDRC::CHA_WDRC gha = {20.f, // attack time (ms)
+  510.f,    // release time (ms)
   24000.f,  // sampling rate (Hz)...ignored.  Set globally in the main program.
   115.f,    // maxdB.  calibration.  dB SPL for signal at 0dBFS.  Needs to be tailored to mic, spkrs, and mic gain.
   1.0,      // compression ratio for lowest-SPL region (ie, the expansion region) (should be < 1.0.  set to 1.0 for linear)
@@ -30,3 +29,5 @@ BTNRH_WDRC::CHA_WDRC gha = {6.f, // attack time (ms)
   1.f,      // compression ratio...set to 1.0 to make linear (to defeat)
   98.0      // output limiting threshold...hardwired to compression ratio of 10.0
 };
+
+// version = "FLAT-M/SLOW"
