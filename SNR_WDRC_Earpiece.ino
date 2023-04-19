@@ -48,7 +48,7 @@ const int audio_block_samples = 128;     //do not make bigger than audio_block_S
 
 AudioSettings_F32 audio_settings(sample_rate_Hz, audio_block_samples);
 
-const int N_CHAN = 8;
+const int N_CHAN = 10;
 
 // define classes to control the Tympan and the AIC_Shield
 Tympan           myTympan(TympanRev::E, audio_settings);         //choose TympanRev::D or TympanRev::E
@@ -302,7 +302,8 @@ void setupAudioProcessing(void) {
   preGain.setGain_dB(0.0f);
 
   //set the per-channel filter coefficients
-  #include "GHA_Constants.h"  //this sets dsl and gha, which are used in the next line
+  //#include "GHA_Constants.h"  //this sets dsl and gha, which are used in the next line
+  #include "FLAT_M_SLOW.h"
   AudioConfigFIRFilterBank_F32 makeFIRcoeffs(N_CHAN, N_FIR, audio_settings.sample_rate_Hz, (float *)dsl.cross_freq, (float *)firCoeff);
   for (int i=0; i< N_CHAN; i++) {
     firFiltL[i].begin(firCoeff[i], N_FIR, audio_settings.audio_block_samples);
@@ -439,7 +440,7 @@ void startLogging(char *fname) {
   //myTympan.println("START LOGGING NOW");
   logFile = sdx.sdfs.open(fname, O_WRITE | O_CREAT);
   logFileOpen = true;
-  logFile.println("V0.1");
+  logFile.println("FLAT-M/SLOW");
 }
 
 void stopLogging() {
