@@ -104,6 +104,9 @@ AudioConnection_F32     patchCord35(inputMixerL, 0, firFiltL[4], 0);
 AudioConnection_F32     patchCord36(inputMixerL, 0, firFiltL[5], 0);
 AudioConnection_F32     patchCord37(inputMixerL, 0, firFiltL[6], 0);
 AudioConnection_F32     patchCord38(inputMixerL, 0, firFiltL[7], 0);
+AudioConnection_F32     patchCord39(inputMixerL, 0, firFiltL[8], 0);
+AudioConnection_F32     patchCord40(inputMixerL, 0, firFiltL[9], 0);
+
 
 AudioConnection_F32     patchCord41(inputMixerR, 0, firFiltR[0], 0);
 AudioConnection_F32     patchCord42(inputMixerR, 0, firFiltR[1], 0);
@@ -113,6 +116,9 @@ AudioConnection_F32     patchCord45(inputMixerR, 0, firFiltR[4], 0);
 AudioConnection_F32     patchCord46(inputMixerR, 0, firFiltR[5], 0);
 AudioConnection_F32     patchCord47(inputMixerR, 0, firFiltR[6], 0);
 AudioConnection_F32     patchCord48(inputMixerR, 0, firFiltR[7], 0);
+AudioConnection_F32     patchCord49(inputMixerR, 0, firFiltR[8], 0);
+AudioConnection_F32     patchCord50(inputMixerR, 0, firFiltR[9], 0);
+
 
 //connect each filter to its corresponding per-band compressor
 AudioConnection_F32     patchCord51(firFiltL[0], 0, compPerBandL[0], 0);
@@ -123,6 +129,10 @@ AudioConnection_F32     patchCord55(firFiltL[4], 0, compPerBandL[4], 0);
 AudioConnection_F32     patchCord56(firFiltL[5], 0, compPerBandL[5], 0);
 AudioConnection_F32     patchCord57(firFiltL[6], 0, compPerBandL[6], 0);
 AudioConnection_F32     patchCord58(firFiltL[7], 0, compPerBandL[7], 0);
+AudioConnection_F32     patchCord59(firFiltL[8], 0, compPerBandL[8], 0);
+AudioConnection_F32     patchCord60(firFiltL[9], 0, compPerBandL[9], 0);
+
+
 
 AudioConnection_F32     patchCord61(firFiltR[0], 0, compPerBandR[0], 0);
 AudioConnection_F32     patchCord62(firFiltR[1], 0, compPerBandR[1], 0);
@@ -132,6 +142,10 @@ AudioConnection_F32     patchCord65(firFiltR[4], 0, compPerBandR[4], 0);
 AudioConnection_F32     patchCord66(firFiltR[5], 0, compPerBandR[5], 0);
 AudioConnection_F32     patchCord67(firFiltR[6], 0, compPerBandR[6], 0);
 AudioConnection_F32     patchCord68(firFiltR[7], 0, compPerBandR[7], 0);
+AudioConnection_F32     patchCord69(firFiltR[8], 0, compPerBandR[8], 0);
+AudioConnection_F32     patchCord70(firFiltR[9], 0, compPerBandR[9], 0);
+
+
 
 //compute the output of the per-band compressors to the mixers (to make into one signal again)
 AudioConnection_F32     patchCord71(compPerBandL[0], 0, mixerL, 0);
@@ -142,6 +156,9 @@ AudioConnection_F32     patchCord75(compPerBandL[4], 0, mixerL, 4);
 AudioConnection_F32     patchCord76(compPerBandL[5], 0, mixerL, 5);
 AudioConnection_F32     patchCord77(compPerBandL[6], 0, mixerL, 6);
 AudioConnection_F32     patchCord78(compPerBandL[7], 0, mixerL, 7);
+AudioConnection_F32     patchCord79(compPerBandL[8], 0, mixerL, 8);
+AudioConnection_F32     patchCord80(compPerBandL[9], 0, mixerL, 9);
+
 
 AudioConnection_F32     patchCord81(compPerBandR[0], 0, mixerR, 0);
 AudioConnection_F32     patchCord82(compPerBandR[1], 0, mixerR, 1);
@@ -151,6 +168,9 @@ AudioConnection_F32     patchCord85(compPerBandR[4], 0, mixerR, 4);
 AudioConnection_F32     patchCord86(compPerBandR[5], 0, mixerR, 5);
 AudioConnection_F32     patchCord87(compPerBandR[6], 0, mixerR, 6);
 AudioConnection_F32     patchCord88(compPerBandR[7], 0, mixerR, 7);
+AudioConnection_F32     patchCord89(compPerBandR[8], 0, mixerR, 8);
+AudioConnection_F32     patchCord90(compPerBandR[9], 0, mixerR, 9);
+
 
 //connect the output of the mixers to the final broadband compressor
 AudioConnection_F32     patchCord91(mixerL, 0, compBroadband[0], 0);
@@ -327,11 +347,11 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
     logFile.print(curTime_micros);
     logFile.print(' ');
     for (int i = 0; i < N_CHAN;  i++) {
-      logFile.print(compPerBandL[i].getCurrentLevel_dB());
+      logFile.print(compPerBandL[i].getCurrentGain_dB());
       logFile.print(" ");
     }
     for (int i = 0; i < N_CHAN;  i++) {
-      logFile.print(compPerBandR[i].getCurrentLevel_dB());
+      logFile.print(compPerBandR[i].getCurrentGain_dB());
       if (i < (N_CHAN - 1)) {
           logFile.print(" ");
       }
