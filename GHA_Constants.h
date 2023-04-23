@@ -8,7 +8,7 @@ static BTNRH_WDRC::CHA_DSL dsl = {5,  //attack (ms)
   300,  //release (ms)
   115, //dB SPL for input signal at 0 dBFS.  Needs to be tailored to mic, spkrs, and mic gain.
   0, // 0=left, 1=right
-  8, //num channels...ignored.  8 is always assumed
+  10, //num channels...ignored.  10 is always assumed
   {250.0, 500.0, 750.0, 1000.0, 1500.0, 2000.0, 3000.0, 4000.0, 6000.0, 8000.0},   // cross frequencies (Hz)...FOR IIR FILTERING, THESE VALUES ARE IGNORED!!!
   {0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57, 0.57},   // compression ratio for low-SPL region (ie, the expander..values should be < 1.0)
   {45.0, 45.0, 33.0, 32.0, 36.0, 34.0, 36.0, 40.0, 40.0, 40.0},   // expansion-end kneepoint
