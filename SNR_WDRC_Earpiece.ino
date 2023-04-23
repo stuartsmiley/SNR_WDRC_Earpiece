@@ -344,19 +344,26 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
   }
   if ((curTime_micros - lastUpdate_micros) > updatePeriod_micros) {
     // TODO: would it be better to concat all output to a string and do a single logfile.println() ?
-    logFile.print(curTime_micros);
-    logFile.print(' ');
+    String line =  String(curTime_micros) + " ";
+    //logFile.print(curTime_micros);
+    //logFile.print(' ');
     for (int i = 0; i < N_CHAN;  i++) {
-      logFile.print(compPerBandL[i].getCurrentGain_dB());
-      logFile.print(" ");
+      line.concat(compPerBandL[i].getCurrentGain_dB());
+      line.concat(" ");
+      //logFile.print(compPerBandL[i].getCurrentGain_dB());
+      //logFile.print(" ");
     }
     for (int i = 0; i < N_CHAN;  i++) {
-      logFile.print(compPerBandR[i].getCurrentGain_dB());
+      line.concat(compPerBandL[i].getCurrentGain_dB());
       if (i < (N_CHAN - 1)) {
-          logFile.print(" ");
+        line.concat(" ");
       }
+      //logFile.print(compPerBandR[i].getCurrentGain_dB());
+      //if (i < (N_CHAN - 1)) {
+      //    logFile.print(" ");
+      //}
     }
-    logFile.println();
+    logFile.println(line);
   }
 }
 
