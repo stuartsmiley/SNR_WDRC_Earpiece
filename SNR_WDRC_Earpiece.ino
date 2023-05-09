@@ -58,6 +58,8 @@ SDClass sdx;
 FsFile logFile;
 boolean logFileOpen = false;
 int experimentCount = 0;
+int tic = 0;
+char logMsg[100];
 // Instantiate the audio classes
 AudioInputI2SQuad_F32   i2s_in(audio_settings);         //Bring audio in
 AudioMixer4_F32         inputMixerL(audio_settings);    //For mixing (or not) the two mics in the left earpiece
@@ -247,7 +249,7 @@ void setup() {
   
     //set volumes
   setOutputGain_dB(0.f);  // -63.6 to +24 dB in 0.5dB steps.  uses signed 8-bit
-  float default_mic_input_gain_dB = 15.0f; //gain on the microphone
+  float default_mic_input_gain_dB = 40.0f; //gain on the microphone
   setInputGain_dB(default_mic_input_gain_dB); // set MICPGA volume, 0-47.5dB in 0.5dB setps
 
  
@@ -344,33 +346,31 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
   }
   if ((curTime_micros - lastUpdate_micros) > updatePeriod_micros) {
     // TODO: would it be better to concat all output to a string and do a single logfile.println() ?
-    String line =  String(curTime_micros) + " ";
-    //logFile.print(curTime_micros);
-    //logFile.print(' ');
-    for (int i = 0; i < N_CHAN;  i++) {
-      line.concat(compPerBandL[i].getCurrentGain_dB());
-      line.concat(" ");
-      //logFile.print(compPerBandL[i].getCurrentGain_dB());
-      //logFile.print(" ");
-    }
-    for (int i = 0; i < N_CHAN;  i++) {
-      line.concat(compPerBandL[i].getCurrentGain_dB());
-      if (i < (N_CHAN - 1)) {
-        line.concat(" ");
-      }
-      //logFile.print(compPerBandR[i].getCurrentGain_dB());
-      //if (i < (N_CHAN - 1)) {
-      //    logFile.print(" ");
-      //}
-    }
-    logFile.println(line);
+    snprintf(logMsg, 100, "%lu %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f", curTime_micros, compPerBandL[0].getCurrentGain_dB(),
+    compPerBandL[1].getCurrentGain_dB(), compPerBandL[2].getCurrentGain_dB(), compPerBandL[3].getCurrentGain_dB(), compPerBandL[4].getCurrentGain_dB(),
+    compPerBandL[5].getCurrentGain_dB(), compPerBandL[6].getCurrentGain_dB(), compPerBandL[7].getCurrentGain_dB(), compPerBandL[8].getCurrentGain_dB(),
+    compPerBandL[9].getCurrentGain_dB());
+//    String line =  String(curTime_micros) + " ";
+//    for (int i = 0; i < N_CHAN;  i++) {
+//      line.concat(compPerBandL[i].getCurrentGain_dB());
+//      line.concat(" ");
+//    }
+//    for (int i = 0; i < N_CHAN;  i++) {
+//      line.concat(compPerBandL[i].getCurrentGain_dB());
+//      if (i < (N_CHAN - 1)) {
+//        line.concat(" ");
+//      }
+//    }
+//    logFile.println(line);
+    logFile.println(logMsg);
+    
   }
 }
 
 void loop() {
 
   if (logFileOpen) {
-    printCompressorState(micros(), 22);
+    printCompressorState(micros(), 220);
     
   }
   //respond to Serial commands
@@ -381,7 +381,7 @@ void loop() {
   audioSDWriter.serviceSD_withWarnings(i2s_in); //For the warnings, it asks the i2s_in class for some info
   
   //service the LEDs...blink slow normally, blink fast if recording
-  myTympan.serviceLEDs(millis(),audioSDWriter.getState() == AudioSDWriter::STATE::RECORDING); 
+  // myTympan.serviceLEDs(millis(),audioSDWriter.getState() == AudioSDWriter::STATE::RECORDING); 
 
   // periodicallly check the potentiometer
   //servicePotentiometer(millis(),100); //service the potentiometer every 100 msec
@@ -473,7 +473,6 @@ void startLogging(char *fname) {
 void stopLogging() {
   logFileOpen = false;
   logFile.close();
-  //myTympan.println("END LOGGING");
 }
 
 //void writeTextToSD(String myString) {

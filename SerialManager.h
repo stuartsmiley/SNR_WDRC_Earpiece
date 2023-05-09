@@ -5,7 +5,7 @@
 
 //Extern variables...originally defined in the main *.ino file
 extern Tympan myTympan;
-extern AudioSDWriter_F32 audioSDWriter;
+//extern AudioSDWriter_F32 audioSDWriter;
 
 //Extern Functions
 extern void setInputSource(int);
@@ -107,7 +107,7 @@ void SerialManager::respondToByte(char c) {
       break;
     case '|':
       Serial.println("Recieved: delete all SD recordings.");
-      audioSDWriter.deleteAllRecordings();
+      //audioSDWriter.deleteAllRecordings();
       Serial.println("Delete all SD recordings complete.");
       break;
     case '1':
