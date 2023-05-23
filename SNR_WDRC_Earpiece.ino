@@ -48,7 +48,7 @@ const int audio_block_samples = 128;     //do not make bigger than audio_block_S
 
 AudioSettings_F32 audio_settings(sample_rate_Hz, audio_block_samples);
 
-const int N_CHAN = 10;
+const int N_CHAN = 8;
 
 // define classes to control the Tympan and the AIC_Shield
 Tympan           myTympan(TympanRev::E, audio_settings);         //choose TympanRev::D or TympanRev::E
@@ -78,7 +78,7 @@ AudioEffectCompWDRC_F32  compPerBandL[N_CHAN];
 AudioEffectCompWDRC_F32  compPerBandR[N_CHAN];
 
 //here are the broad band compressors
-AudioEffectCompWDRC_F32  compBroadband[2];
+//AudioEffectCompWDRC_F32  compBroadband[2];
 
 //mixer to reconstruct the broadband audio  left
 AudioMixer8_F32          mixerL;
@@ -106,8 +106,8 @@ AudioConnection_F32     patchCord35(inputMixerL, 0, firFiltL[4], 0);
 AudioConnection_F32     patchCord36(inputMixerL, 0, firFiltL[5], 0);
 AudioConnection_F32     patchCord37(inputMixerL, 0, firFiltL[6], 0);
 AudioConnection_F32     patchCord38(inputMixerL, 0, firFiltL[7], 0);
-AudioConnection_F32     patchCord39(inputMixerL, 0, firFiltL[8], 0);
-AudioConnection_F32     patchCord40(inputMixerL, 0, firFiltL[9], 0);
+//AudioConnection_F32     patchCord39(inputMixerL, 0, firFiltL[8], 0);
+//AudioConnection_F32     patchCord40(inputMixerL, 0, firFiltL[9], 0);
 
 
 AudioConnection_F32     patchCord41(inputMixerR, 0, firFiltR[0], 0);
@@ -118,8 +118,8 @@ AudioConnection_F32     patchCord45(inputMixerR, 0, firFiltR[4], 0);
 AudioConnection_F32     patchCord46(inputMixerR, 0, firFiltR[5], 0);
 AudioConnection_F32     patchCord47(inputMixerR, 0, firFiltR[6], 0);
 AudioConnection_F32     patchCord48(inputMixerR, 0, firFiltR[7], 0);
-AudioConnection_F32     patchCord49(inputMixerR, 0, firFiltR[8], 0);
-AudioConnection_F32     patchCord50(inputMixerR, 0, firFiltR[9], 0);
+//AudioConnection_F32     patchCord49(inputMixerR, 0, firFiltR[8], 0);
+//AudioConnection_F32     patchCord50(inputMixerR, 0, firFiltR[9], 0);
 
 
 //connect each filter to its corresponding per-band compressor
@@ -131,8 +131,8 @@ AudioConnection_F32     patchCord55(firFiltL[4], 0, compPerBandL[4], 0);
 AudioConnection_F32     patchCord56(firFiltL[5], 0, compPerBandL[5], 0);
 AudioConnection_F32     patchCord57(firFiltL[6], 0, compPerBandL[6], 0);
 AudioConnection_F32     patchCord58(firFiltL[7], 0, compPerBandL[7], 0);
-AudioConnection_F32     patchCord59(firFiltL[8], 0, compPerBandL[8], 0);
-AudioConnection_F32     patchCord60(firFiltL[9], 0, compPerBandL[9], 0);
+//AudioConnection_F32     patchCord59(firFiltL[8], 0, compPerBandL[8], 0);
+//AudioConnection_F32     patchCord60(firFiltL[9], 0, compPerBandL[9], 0);
 
 
 
@@ -144,8 +144,8 @@ AudioConnection_F32     patchCord65(firFiltR[4], 0, compPerBandR[4], 0);
 AudioConnection_F32     patchCord66(firFiltR[5], 0, compPerBandR[5], 0);
 AudioConnection_F32     patchCord67(firFiltR[6], 0, compPerBandR[6], 0);
 AudioConnection_F32     patchCord68(firFiltR[7], 0, compPerBandR[7], 0);
-AudioConnection_F32     patchCord69(firFiltR[8], 0, compPerBandR[8], 0);
-AudioConnection_F32     patchCord70(firFiltR[9], 0, compPerBandR[9], 0);
+//AudioConnection_F32     patchCord69(firFiltR[8], 0, compPerBandR[8], 0);
+//AudioConnection_F32     patchCord70(firFiltR[9], 0, compPerBandR[9], 0);
 
 
 
@@ -158,8 +158,8 @@ AudioConnection_F32     patchCord75(compPerBandL[4], 0, mixerL, 4);
 AudioConnection_F32     patchCord76(compPerBandL[5], 0, mixerL, 5);
 AudioConnection_F32     patchCord77(compPerBandL[6], 0, mixerL, 6);
 AudioConnection_F32     patchCord78(compPerBandL[7], 0, mixerL, 7);
-AudioConnection_F32     patchCord79(compPerBandL[8], 0, mixerL, 8);
-AudioConnection_F32     patchCord80(compPerBandL[9], 0, mixerL, 9);
+//AudioConnection_F32     patchCord79(compPerBandL[8], 0, mixerL, 8);
+//AudioConnection_F32     patchCord80(compPerBandL[9], 0, mixerL, 9);
 
 
 AudioConnection_F32     patchCord81(compPerBandR[0], 0, mixerR, 0);
@@ -170,13 +170,13 @@ AudioConnection_F32     patchCord85(compPerBandR[4], 0, mixerR, 4);
 AudioConnection_F32     patchCord86(compPerBandR[5], 0, mixerR, 5);
 AudioConnection_F32     patchCord87(compPerBandR[6], 0, mixerR, 6);
 AudioConnection_F32     patchCord88(compPerBandR[7], 0, mixerR, 7);
-AudioConnection_F32     patchCord89(compPerBandR[8], 0, mixerR, 8);
-AudioConnection_F32     patchCord90(compPerBandR[9], 0, mixerR, 9);
+//AudioConnection_F32     patchCord89(compPerBandR[8], 0, mixerR, 8);
+//AudioConnection_F32     patchCord90(compPerBandR[9], 0, mixerR, 9);
 
 
 //connect the output of the mixers to the final broadband compressor
-AudioConnection_F32     patchCord91(mixerL, 0, compBroadband[0], 0);
-AudioConnection_F32     patchCord92(mixerR, 0, compBroadband[1], 0);
+//AudioConnection_F32     patchCord91(mixerL, 0, compBroadband[0], 0);
+//AudioConnection_F32     patchCord92(mixerR, 0, compBroadband[1], 0);
 
 
 //Connect the input mixers to both the Tympan and Shield audio outputs...which i2s output is associated with each audio output is in EarpieceShield.cpp  
@@ -259,29 +259,30 @@ void setup() {
 
 }
 
-static void configureBroadbandWDRCs(float fs_Hz, BTNRH_WDRC::CHA_WDRC *gha, AudioEffectCompWDRC_F32 *WDRC) {
-  //logic and values are extracted from from CHAPRO repo agc_prepare.c...the part setting CHA_DVAR
+//static void configureBroadbandWDRCs(float fs_Hz, BTNRH_WDRC::CHA_WDRC *gha, AudioEffectCompWDRC_F32 *WDRC) {
+//  //logic and values are extracted from from CHAPRO repo agc_prepare.c...the part setting CHA_DVAR
+//
+//  //extract the parameters
+//  float atk = (float)gha->attack;  //milliseconds!
+//  float rel = (float)gha->release; //milliseconds!
+//  //float fs = gha->fs;
+//  float fs = (float)fs_Hz; // WEA override...not taken from gha
+//  float maxdB = (float) gha->maxdB;
+//  float exp_cr = (float)gha->exp_cr;
+//  float exp_end_knee = (float)gha->exp_end_knee;
+//  float tk = (float) gha->tk;
+//  float comp_ratio = (float) gha->cr;
+//  float tkgain = (float) gha->tkgain;
+//  float bolt = (float) gha->bolt;
+//
+//  //set the compressor's parameters
+//  WDRC->setSampleRate_Hz(fs);
+//  WDRC->setParams(atk,rel,maxdB,exp_cr,exp_end_knee,tkgain,comp_ratio,tk,bolt);
+//
+//}
 
-  //extract the parameters
-  float atk = (float)gha->attack;  //milliseconds!
-  float rel = (float)gha->release; //milliseconds!
-  //float fs = gha->fs;
-  float fs = (float)fs_Hz; // WEA override...not taken from gha
-  float maxdB = (float) gha->maxdB;
-  float exp_cr = (float)gha->exp_cr;
-  float exp_end_knee = (float)gha->exp_end_knee;
-  float tk = (float) gha->tk;
-  float comp_ratio = (float) gha->cr;
-  float tkgain = (float) gha->tkgain;
-  float bolt = (float) gha->bolt;
-
-  //set the compressor's parameters
-  WDRC->setSampleRate_Hz(fs);
-  WDRC->setParams(atk,rel,maxdB,exp_cr,exp_end_knee,tkgain,comp_ratio,tk,bolt);
-
-}
-
-static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *dsl, BTNRH_WDRC::CHA_WDRC *gha, AudioEffectCompWDRC_F32 WDRCs[]) {
+//static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *dsl, BTNRH_WDRC::CHA_WDRC *gha, AudioEffectCompWDRC_F32 WDRCs[]) {
+static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *dsl, AudioEffectCompWDRC_F32 WDRCs[]) {
 
   if (nchan > dsl->nchannel) {
     myTympan.println(F("configureWDRC.configure: *** ERROR ***: nchan > dsl.nchannel"));
@@ -305,9 +306,9 @@ static void configurePerBandWDRCs(int nchan, float fs_Hz, BTNRH_WDRC::CHA_DSL *d
     float bolt = (float) dsl->bolt[i];
 
     // adjust BOLT
-    float cltk = (float)gha->tk;
-    if (bolt > cltk) bolt = cltk;
-    if (tkgain < 0) bolt = bolt + tkgain;
+//    float cltk = (float)gha->tk;
+//    if (bolt > cltk) bolt = cltk;
+//    if (tkgain < 0) bolt = bolt + tkgain;
 
     //set the compressor's parameters
     WDRCs[i].setSampleRate_Hz(fs);
@@ -333,10 +334,10 @@ void setupAudioProcessing(void) {
   }
 
   //setup all of the the compressors
-  configureBroadbandWDRCs(audio_settings.sample_rate_Hz, &gha, &compBroadband[0]);
-  configureBroadbandWDRCs(audio_settings.sample_rate_Hz, &gha, &compBroadband[1]);
-  configurePerBandWDRCs(N_CHAN, audio_settings.sample_rate_Hz, &dsl, &gha, compPerBandL);
-  configurePerBandWDRCs(N_CHAN, audio_settings.sample_rate_Hz, &dsl, &gha, compPerBandR);
+//  configureBroadbandWDRCs(audio_settings.sample_rate_Hz, &gha, &compBroadband[0]);
+//  configureBroadbandWDRCs(audio_settings.sample_rate_Hz, &gha, &compBroadband[1]);
+  configurePerBandWDRCs(N_CHAN, audio_settings.sample_rate_Hz, &dsl, compPerBandL);
+  configurePerBandWDRCs(N_CHAN, audio_settings.sample_rate_Hz, &dslr, compPerBandR);
 }
 
 void printCompressorState(unsigned long curTime_micros, unsigned long updatePeriod_micros) {
@@ -350,20 +351,7 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
     compPerBandL[1].getCurrentGain_dB(), compPerBandL[2].getCurrentGain_dB(), compPerBandL[3].getCurrentGain_dB(), compPerBandL[4].getCurrentGain_dB(),
     compPerBandL[5].getCurrentGain_dB(), compPerBandL[6].getCurrentGain_dB(), compPerBandL[7].getCurrentGain_dB(), compPerBandL[8].getCurrentGain_dB(),
     compPerBandL[9].getCurrentGain_dB());
-//    String line =  String(curTime_micros) + " ";
-//    for (int i = 0; i < N_CHAN;  i++) {
-//      line.concat(compPerBandL[i].getCurrentGain_dB());
-//      line.concat(" ");
-//    }
-//    for (int i = 0; i < N_CHAN;  i++) {
-//      line.concat(compPerBandL[i].getCurrentGain_dB());
-//      if (i < (N_CHAN - 1)) {
-//        line.concat(" ");
-//      }
-//    }
-//    logFile.println(line);
     logFile.println(logMsg);
-    
   }
 }
 
@@ -446,8 +434,9 @@ void setInputGain_dB(float newGain_dB) {
 float setDigitalGain_dB(float gain_dB) { return setDigitalGain_dB(gain_dB, true); }
 float setDigitalGain_dB(float gain_dB, bool printToUSBSerial) {
   // or should this be compBroadband[0] and compBroadband[1]
-  float digital_gain = compBroadband[0].setGain_dB(gain_dB); //this actually sets the gain
-  compBroadband[1].setGain_dB(gain_dB); //this actually sets the gain
+//  float digital_gain = compBroadband[0].setGain_dB(gain_dB); //this actually sets the gain
+//  compBroadband[1].setGain_dB(gain_dB); //this actually sets the gain
+  float digital_gain = gain_dB;
 
   return digital_gain;
 }
