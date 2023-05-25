@@ -234,7 +234,7 @@ void setup() {
 
   //prepare the SD writer for the format that we want and any error statements
   audioSDWriter.setSerial(&myTympan);
-  audioSDWriter.setNumWriteChannels(4);             //four channels for this quad recorder, but you could set it to 2
+  audioSDWriter.setNumWriteChannels(2);             //four channels for this quad recorder, but you could set it to 2
   Serial.print("SD configured for "); Serial.print(audioSDWriter.getNumWriteChannels()); Serial.println(" channels.");
   setupAudioProcessing();
 
@@ -347,11 +347,20 @@ void printCompressorState(unsigned long curTime_micros, unsigned long updatePeri
   }
   if ((curTime_micros - lastUpdate_micros) > updatePeriod_micros) {
     // TODO: would it be better to concat all output to a string and do a single logfile.println() ?
-    snprintf(logMsg, 100, "%lu %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f", curTime_micros, compPerBandL[0].getCurrentGain_dB(),
-    compPerBandL[1].getCurrentGain_dB(), compPerBandL[2].getCurrentGain_dB(), compPerBandL[3].getCurrentGain_dB(), compPerBandL[4].getCurrentGain_dB(),
-    compPerBandL[5].getCurrentGain_dB(), compPerBandL[6].getCurrentGain_dB(), compPerBandL[7].getCurrentGain_dB(), compPerBandL[8].getCurrentGain_dB(),
-    compPerBandL[9].getCurrentGain_dB());
+    //Logging Gain Levels for each compressor band
+    //snprintf(logMsg, 100, "%lu %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f", curTime_micros, compPerBandL[0].getCurrentGain_dB(),
+    //compPerBandL[1].getCurrentGain_dB(), compPerBandL[2].getCurrentGain_dB(), compPerBandL[3].getCurrentGain_dB(), compPerBandL[4].getCurrentGain_dB(),
+    //compPerBandL[5].getCurrentGain_dB(), compPerBandL[6].getCurrentGain_dB(), compPerBandL[7].getCurrentGain_dB());
+    //logFile.println(logMsg);
+
+    //Logging dB Levels of each band in stimulus
+    snprintf(logMsg, 100, "%lu %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f", curTime_micros, compPerBandL[0].getCurrentLevel_dB(),
+    compPerBandL[1].getCurrentLevel_dB(), compPerBandL[2].getCurrentLevel_dB(), compPerBandL[3].getCurrentLevel_dB(), compPerBandL[4].getCurrentLevel_dB(),
+    compPerBandL[5].getCurrentLevel_dB(), compPerBandL[6].getCurrentLevel_dB(), compPerBandL[7].getCurrentLevel_dB());
     logFile.println(logMsg);
+
+
+    
   }
 }
 
